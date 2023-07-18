@@ -11,6 +11,10 @@ from libratom.cli.subcommands import emldump
 with open("main.txt", "r") as file:
     lines = file.readlines()
 
+if len(lines) == 0:
+    print("main.txt is empty.\nUsage: Enter filename follwed by search terms on newlines.")
+    exit(0)
+
 backupName = lines[0].strip()
 searchItems = [line.strip() for line in lines[1:]]
 id_list = []

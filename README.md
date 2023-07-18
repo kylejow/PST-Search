@@ -1,3 +1,3 @@
 # PST Search
- 
-Usage: Enter filename follwed by search terms on newlines 
+Searches for keywords in .pst email data files.
+Usage: Enter filename follwed by search terms on newlines.
