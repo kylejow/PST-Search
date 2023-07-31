@@ -6,17 +6,23 @@ import json
 from pathlib import Path
 from tempfile import gettempdir
 from libratom.cli.subcommands import emldump
+import search
 
-
-with open("main.txt", "r") as file:
-    lines = file.readlines()
-
-if len(lines) == 0:
-    print("main.txt is empty.\nUsage: Enter filename follwed by search terms on newlines.")
+with open("searchContent.txt", "r") as file:
+    searchContent = file.readlines()
+if len(searchContent) == 0:
+    print("searchContent.txt is empty.\nUsage: Enter filename followed by search terms on newlines.")
     exit(0)
 
-backupName = lines[0].strip()
-searchItems = [line.strip() for line in lines[1:]]
+doSearchHeaders = False
+with open("searchHeaders.txt", "r") as file:
+    searchHeaders = file.readlines()
+if len(searchHeaders) != 0:
+    searchHeaders = [line.strip() for line in searchHeaders]
+    doSearchHeaders = True
+
+backupName = searchContent[0].strip()
+searchItems = [line.strip() for line in searchContent[1:]]
 id_list = []
 
 try:
@@ -26,18 +32,12 @@ except Exception as e:
     print("Error message:", str(e))
     exit(0)
 
-for folder in archive.folders():
-    if folder.get_number_of_sub_messages() != 0:
-        for message in folder.sub_messages:
-            # print(message.identifier)
-            subject = str(message.subject)
-            body = archive.format_message(message)
-            for item in searchItems:
-                if item.casefold() in subject.casefold() or item.casefold() in body.casefold():
-                    # print("found in" + subject)
-                    # print(archive.format_message(message))
-                    # print(message.identifier)
-                    id_list.append(message.identifier)
+id_list = search.searchContent(archive, searchItems)
+
+if doSearchHeaders:
+    id_list_headers = search.searchHeaders(archive, searchHeaders)
+    id_list = list(set(id_list).intersection(id_list_headers))
+    # id_list += id_list_headers
 
 eml_export_input = [
     {
