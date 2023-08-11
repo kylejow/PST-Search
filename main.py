@@ -51,3 +51,6 @@ json_file_path = Path(gettempdir()) / "eml_export_input.json"
 with json_file_path.open(mode="w") as json_file:
     json.dump(eml_export_input, json_file)
 status = emldump(out=Path.cwd(), location=Path.cwd(), src=json_file_path)
+
+print("Export Complete")
+search.moveToFolders(backupName)
